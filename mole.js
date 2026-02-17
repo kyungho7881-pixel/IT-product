@@ -64,10 +64,12 @@ function showCharacter() {
   
   const randomChar = characters[Math.floor(Math.random() * characters.length)]; // Randomly pick a character
   characterElement.classList.add(randomChar); // Add character class
+  characterElement.classList.add('up'); // Make character slide up
 
   const time = randomTime(500, 1000); // Character stays up for 0.5 to 1 second
   setTimeout(() => {
-    characterElement.className = 'character'; // Make character hide
+    characterElement.classList.remove('up'); // Make character hide
+    characterElement.className = 'character'; // Reset character classes
     if (!timeUp) showCharacter(); // If game is not over, show another character
   }, time);
 }
@@ -88,14 +90,21 @@ function startGame() {
 
 gameBoard.addEventListener('click', e => {
   if (!e.target.classList.contains('character')) return; // Only proceed if a character div is clicked
-  if (e.target.classList.contains('jin')) {
+
+  e.target.classList.remove('up'); // Hide character immediately
+  e.target.classList.add('hit'); // Add hit feedback
+
+  setTimeout(() => {
+    e.target.classList.remove('hit'); // Remove hit feedback
+    e.target.className = 'character'; // Reset character classes
+  }, 200); // Short delay for hit animation
+
+  if (e.target.classList.contains('jin')) { // Check if it was jin after removing other classes
     playSound('hit');
     score++;
     scoreDisplay.textContent = score;
-    e.target.className = 'character'; // Hide character immediately on hit
-  } else if (e.target.classList.length > 1) { // It's another character (not just 'character')
+  } else { // It's another character or a miss
     playSound('miss');
-    e.target.className = 'character'; // Hide character immediately on miss
   }
 });
 

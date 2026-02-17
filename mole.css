@@ -14,6 +14,7 @@
   border: 5px solid #53351a;
   overflow: hidden;
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><text y="24" font-size="24">🍾</text></svg>'), auto;
+  position: relative; /* For character animation */
 }
 
 .character {
@@ -21,8 +22,18 @@
   height: 100%;
   background-size: cover;
   background-position: center;
+  transform: translateY(100%);
+  transition: transform 0.2s ease-out;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 
+.hole .character.up {
+  transform: translateY(0);
+}
+
+/* Specific character images */
 .kwak {
   background-image: url('https://via.placeholder.com/80x80.png/FF0000/FFFFFF?text=곽대표');
 }
@@ -37,4 +48,10 @@
 
 .kim {
   background-image: url('https://via.placeholder.com/80x80.png/FFFF00/000000?text=김과장');
+}
+
+/* Hit feedback */
+.character.hit {
+  opacity: 0.5;
+  transform: scale(0.8);
 }
