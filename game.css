@@ -76,7 +76,7 @@ body {
   box-shadow: inset 0 8px 0 rgba(255, 255, 255, 0.12), inset 0 -8px 0 rgba(0, 0, 0, 0.14);
   border-bottom: 8px solid var(--soil-edge);
   overflow: hidden;
-  cursor: pointer;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 32 32"><text y="24" font-size="24">🍾</text></svg>') 4 28, pointer;
 }
 
 .hole:active {
