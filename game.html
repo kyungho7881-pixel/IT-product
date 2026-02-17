@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>진과장 찾기 두더지 게임</title>
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1>진과장 찾기</h1>
+      <p>등장 캐릭터: 곽대표, 이팀장, 진과장, 김동규</p>
+    </header>
+
+    <section class="hud">
+      <div class="card">점수 <strong id="score">0</strong></div>
+      <div class="card">남은 시간 <strong id="time-left">30</strong>s</div>
+      <div class="card">스테이지 <strong id="stage">1</strong></div>
+      <div class="card target">목표: <strong>진과장만</strong> 맞추기</div>
+    </section>
+
+    <section id="board" class="board" aria-label="두더지 게임 보드"></section>
+
+    <section class="actions">
+      <button id="start-btn" type="button">게임 시작</button>
+      <button id="restart-btn" type="button" disabled>다시 시작</button>
+    </section>
+  </main>
+
+  <section id="result-modal" class="result-modal hidden" aria-live="polite">
+    <div class="result-box">
+      <h2>게임 종료</h2>
+      <p>최종 점수: <strong id="final-score">0</strong></p>
+      <p>최고 점수: <strong id="best-score">0</strong></p>
+      <button id="play-again-btn" type="button">한 판 더</button>
+    </div>
+  </section>
+
+  <script src="game.js"></script>
+</body>
+</html>
