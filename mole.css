@@ -9,12 +9,18 @@ body {
   margin: 0 auto;
 }
 
+#instruction-text {
+  font-size: 1.5em;
+  color: #333;
+}
+
 #game-board {
   display: grid;
   grid-template-columns: repeat(3, 100px);
   grid-gap: 10px;
   margin: 20px auto;
   width: 320px;
+  position: relative;
 }
 
 .hole {
@@ -34,7 +40,7 @@ body {
   background-size: cover;
   background-position: center;
   transform: translateY(100%);
-  transition: transform 0.2s ease-out;
+  transition: all 0.2s ease-out;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -43,6 +49,29 @@ body {
 .hole .character.up {
   transform: translateY(0);
 }
+
+/* Feedback pseudo-elements */
+.character::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.character.correct-hit::after {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" stroke="green" stroke-width="10" fill="none"/></svg>');
+  opacity: 1;
+}
+
+.character.wrong-hit::after {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><line x1="10" y1="10" x2="90" y2="90" stroke="red" stroke-width="10"/><line x1="90" y1="10" x2="10" y2="90" stroke="red" stroke-width="10"/></svg>');
+  opacity: 1;
+}
+
 
 /* Specific character images */
 .kwak {
@@ -59,12 +88,6 @@ body {
 
 .kim {
   background-image: url('https://via.placeholder.com/80x80.png/FFFF00/000000?text=김과장');
-}
-
-/* Hit feedback */
-.character.hit {
-  opacity: 0.5;
-  transform: scale(0.8);
 }
 
 #game-over-screen {

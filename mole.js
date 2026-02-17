@@ -78,7 +78,7 @@ function showCharacter() {
 function countdown() {
   timeLeft--;
   timeLeftDisplay.textContent = timeLeft;
-  if (timeLeft === 0) {
+  if (timeLeft <= 0) {
     endGame();
   }
 }
@@ -94,6 +94,8 @@ function startGame() {
   // Hide game over screen and start button
   gameOverScreen.classList.add('hidden');
   startButton.style.display = 'none';
+  document.getElementById('instruction-text').style.display = 'block';
+
 
   // Start timers
   timerId = setInterval(countdown, 1000);
@@ -108,25 +110,29 @@ function endGame() {
   clearInterval(characterInterval);
   finalScoreDisplay.textContent = score;
   gameOverScreen.classList.remove('hidden');
+  document.getElementById('instruction-text').style.display = 'none';
+
 }
 
 gameBoard.addEventListener('click', e => {
   if (timeUp || !e.target.classList.contains('up')) return;
 
+  const isCorrect = e.target.classList.contains('jin');
   e.target.classList.remove('up');
-  e.target.classList.add('hit');
 
-  setTimeout(() => {
-    e.target.className = 'character';
-  }, 200);
-
-  if (e.target.classList.contains('jin')) {
+  if (isCorrect) {
     playSound('hit');
     score++;
     scoreDisplay.textContent = score;
+    e.target.classList.add('correct-hit');
   } else {
     playSound('miss');
+    e.target.classList.add('wrong-hit');
   }
+
+  setTimeout(() => {
+    e.target.className = 'character';
+  }, 300);
 });
 
 createGameBoard();
