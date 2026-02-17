@@ -6,6 +6,8 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let score = 0;
 let moleInterval;
 const characters = ['kwak', 'lee', 'jin', 'kim'];
+let lastHole; // Variable to store the last hole a character appeared in
+let timeUp = false; // Flag to indicate if the game time is up
 
 function playSound(type) {
   const oscillator = audioContext.createOscillator();
@@ -39,36 +41,61 @@ function createGameBoard() {
   }
 }
 
-function randomCharacter() {
-  const holes = document.querySelectorAll('.hole .character');
-  holes.forEach(hole => hole.className = 'character');
-  const randomHole = holes[Math.floor(Math.random() * 9)];
-  const randomChar = characters[Math.floor(Math.random() * characters.length)];
-  randomHole.classList.add(randomChar);
+// Function to get a random time for character to stay up
+function randomTime(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+// Function to get a random hole, ensuring it's not the same as the last one
+function randomHole(holes) {
+  const idx = Math.floor(Math.random() * holes.length);
+  const hole = holes[idx];
+  if (hole === lastHole) {
+    return randomHole(holes); // Recursively call until a different hole is found
+  }
+  lastHole = hole;
+  return hole;
+}
+
+function showCharacter() {
+  const holes = document.querySelectorAll('.hole'); // Select all hole elements
+  const hole = randomHole(Array.from(holes)); // Get a random unique hole
+  const characterElement = hole.querySelector('.character'); // Get the character div inside the hole
+  
+  const randomChar = characters[Math.floor(Math.random() * characters.length)]; // Randomly pick a character
+  characterElement.classList.add(randomChar); // Add character class
+
+  const time = randomTime(500, 1000); // Character stays up for 0.5 to 1 second
+  setTimeout(() => {
+    characterElement.className = 'character'; // Make character hide
+    if (!timeUp) showCharacter(); // If game is not over, show another character
+  }, time);
 }
 
 function startGame() {
   score = 0;
   scoreDisplay.textContent = score;
-  moleInterval = setInterval(randomCharacter, 800);
+  timeUp = false; // Reset timeUp flag
   startButton.disabled = true;
+  showCharacter(); // Start showing characters
 
   setTimeout(() => {
-    clearInterval(moleInterval);
+    timeUp = true; // Set timeUp flag to true after 10 seconds
     startButton.disabled = false;
     alert('Game Over! Your score is ' + score);
-  }, 10000);
+  }, 10000); // Game lasts for 10 seconds
 }
 
 gameBoard.addEventListener('click', e => {
+  if (!e.target.classList.contains('character')) return; // Only proceed if a character div is clicked
   if (e.target.classList.contains('jin')) {
     playSound('hit');
     score++;
     scoreDisplay.textContent = score;
-    e.target.className = 'character';
-  } else if (e.target.classList.length > 1) {
+    e.target.className = 'character'; // Hide character immediately on hit
+  } else if (e.target.classList.length > 1) { // It's another character (not just 'character')
     playSound('miss');
-    e.target.className = 'character';
+    e.target.className = 'character'; // Hide character immediately on miss
   }
 });
 
