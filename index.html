@@ -7,10 +7,20 @@
   <link rel="stylesheet" href="mole.css">
 </head>
 <body>
+  <div class="game-info">
+    <h2>Score: <span id="score">0</span></h2>
+    <h2>Time Left: <span id="time-left">10</span></h2>
+  </div>
   <h1>Whack-a-Mole</h1>
-  <h2>Score: <span id="score">0</span></h2>
   <div id="game-board"></div>
   <button id="start-button">Start Game</button>
+
+  <div id="game-over-screen" class="hidden">
+    <h2>Game Over!</h2>
+    <p>Your final score is: <span id="final-score">0</span></p>
+    <button id="play-again-button">Play Again</button>
+  </div>
+
   <script src="mole.js"></script>
 </body>
 </html>

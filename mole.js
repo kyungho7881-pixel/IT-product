@@ -1,18 +1,24 @@
 const scoreDisplay = document.getElementById('score');
-const gameBoard = document.getElementById('game-board');
+const timeLeftDisplay = document.getElementById('time-left');
 const startButton = document.getElementById('start-button');
+const gameOverScreen = document.getElementById('game-over-screen');
+const finalScoreDisplay = document.getElementById('final-score');
+const playAgainButton = document.getElementById('play-again-button');
+const gameBoard = document.getElementById('game-board');
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
 let score = 0;
-let moleInterval;
 const characters = ['kwak', 'lee', 'jin', 'kim'];
-let lastHole; // Variable to store the last hole a character appeared in
-let timeUp = false; // Flag to indicate if the game time is up
+let lastHole;
+let timeUp = false;
+let timeLeft = 10;
+let timerId;
+let characterInterval;
 
 function playSound(type) {
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
-
   oscillator.connect(gainNode);
   gainNode.connect(audioContext.destination);
 
@@ -41,72 +47,88 @@ function createGameBoard() {
   }
 }
 
-// Function to get a random time for character to stay up
 function randomTime(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
 
-// Function to get a random hole, ensuring it's not the same as the last one
 function randomHole(holes) {
   const idx = Math.floor(Math.random() * holes.length);
   const hole = holes[idx];
   if (hole === lastHole) {
-    return randomHole(holes); // Recursively call until a different hole is found
+    return randomHole(holes);
   }
   lastHole = hole;
   return hole;
 }
 
 function showCharacter() {
-  const holes = document.querySelectorAll('.hole'); // Select all hole elements
-  const hole = randomHole(Array.from(holes)); // Get a random unique hole
-  const characterElement = hole.querySelector('.character'); // Get the character div inside the hole
+  const holes = document.querySelectorAll('.hole');
+  const hole = randomHole(Array.from(holes));
+  const characterElement = hole.querySelector('.character');
   
-  const randomChar = characters[Math.floor(Math.random() * characters.length)]; // Randomly pick a character
-  characterElement.classList.add(randomChar); // Add character class
-  characterElement.classList.add('up'); // Make character slide up
+  const randomChar = characters[Math.floor(Math.random() * characters.length)];
+  characterElement.classList.add(randomChar, 'up');
 
-  const time = randomTime(500, 1000); // Character stays up for 0.5 to 1 second
+  const time = randomTime(500, 800); // Made it a bit faster
   setTimeout(() => {
-    characterElement.classList.remove('up'); // Make character hide
-    characterElement.className = 'character'; // Reset character classes
-    if (!timeUp) showCharacter(); // If game is not over, show another character
+    characterElement.className = 'character';
   }, time);
 }
 
-function startGame() {
-  score = 0;
-  scoreDisplay.textContent = score;
-  timeUp = false; // Reset timeUp flag
-  startButton.disabled = true;
-  showCharacter(); // Start showing characters
+function countdown() {
+  timeLeft--;
+  timeLeftDisplay.textContent = timeLeft;
+  if (timeLeft === 0) {
+    endGame();
+  }
+}
 
-  setTimeout(() => {
-    timeUp = true; // Set timeUp flag to true after 10 seconds
-    startButton.disabled = false;
-    alert('Game Over! Your score is ' + score);
-  }, 10000); // Game lasts for 10 seconds
+function startGame() {
+  // Reset everything
+  score = 0;
+  timeLeft = 10;
+  timeUp = false;
+  scoreDisplay.textContent = score;
+  timeLeftDisplay.textContent = timeLeft;
+  
+  // Hide game over screen and start button
+  gameOverScreen.classList.add('hidden');
+  startButton.style.display = 'none';
+
+  // Start timers
+  timerId = setInterval(countdown, 1000);
+  characterInterval = setInterval(() => {
+    if (!timeUp) showCharacter();
+  }, 600); // New character appears every 600ms
+}
+
+function endGame() {
+  timeUp = true;
+  clearInterval(timerId);
+  clearInterval(characterInterval);
+  finalScoreDisplay.textContent = score;
+  gameOverScreen.classList.remove('hidden');
 }
 
 gameBoard.addEventListener('click', e => {
-  if (!e.target.classList.contains('character')) return; // Only proceed if a character div is clicked
+  if (timeUp || !e.target.classList.contains('up')) return;
 
-  e.target.classList.remove('up'); // Hide character immediately
-  e.target.classList.add('hit'); // Add hit feedback
+  e.target.classList.remove('up');
+  e.target.classList.add('hit');
 
   setTimeout(() => {
-    e.target.classList.remove('hit'); // Remove hit feedback
-    e.target.className = 'character'; // Reset character classes
-  }, 200); // Short delay for hit animation
+    e.target.className = 'character';
+  }, 200);
 
-  if (e.target.classList.contains('jin')) { // Check if it was jin after removing other classes
+  if (e.target.classList.contains('jin')) {
     playSound('hit');
     score++;
     scoreDisplay.textContent = score;
-  } else { // It's another character or a miss
+  } else {
     playSound('miss');
   }
 });
 
 createGameBoard();
 startButton.addEventListener('click', startGame);
+playAgainButton.addEventListener('click', startGame);
